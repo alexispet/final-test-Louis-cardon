@@ -20,6 +20,7 @@ services:
     env_file:
       - .env
     environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
       MYSQL_DATABASE: "${DB_DATABASE}"
     ports:
