@@ -21,8 +21,8 @@ services:
       - .env
     environment:
       MYSQL_RANDOM_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
     ports:
       - "3306:3306"
     volumes:
