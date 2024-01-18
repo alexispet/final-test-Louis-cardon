@@ -27,8 +27,7 @@ jobs:
           push: true
           tags: ghcr.io/louis-cardon/finaltestlouis:latest
 
-  test:
-    #    needs: build
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +38,6 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
       - run: docker compose up -d --build
-      - run: sleep 10 # wait for the database to be ready mariadb
+      - run: sleep 10
       - run: docker compose logs app
       - run: docker compose exec app npm run test
