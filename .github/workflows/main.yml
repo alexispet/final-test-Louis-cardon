@@ -40,5 +40,5 @@ jobs:
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
       - run: docker compose up -d --build
       - run: sleep 10 # wait for the database to be ready mariadb
-      - run: docker compose logs express
-      - run: docker compose exec express npm run test
+      - run: docker compose logs app
+      - run: docker compose exec app npm run test
