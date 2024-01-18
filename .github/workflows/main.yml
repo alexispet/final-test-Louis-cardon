@@ -27,23 +27,18 @@ jobs:
           push: true
           tags: ghcr.io/louis-cardon/finaltestlouis:latest
 
-  build-and-test:
-    environment: development
+  test:
+    #    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Create .env file
-        run: echo "DB_HOST=${{ secrets.DB_HOST }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}" > .env
       - uses: actions/checkout@v4
-      - uses: adambirds/docker-compose-action@v1.3.0
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-          services: |
-            app
-            mariadb
-          test-container: app
-          test-command: "npm run test"
-        env:
-          MYSQL_RANDOM_PASSWORD: "yes"
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+      - name: Set up Docker Compose
+        run: |
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+      - run: docker compose up -d --build
+      - run: sleep 10 # wait for the database to be ready mariadb
+      - run: docker compose logs express
+      - run: docker compose exec express npm run test
