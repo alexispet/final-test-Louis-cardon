@@ -7,7 +7,47 @@ on:
       - develop
 
 jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        run: |
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+      - run: docker compose up -d --build
+      - run: sleep 10
+      - run: docker compose logs app
+      - run: docker compose exec app npm run test
+
+  dependency-audit:
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run audit
+        run: npm audit --audit-level=high
+
+  codeql-analysis:
+    needs: [dependency-audit]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
   build-and-push-docker:
+    needs: [codeql-analysis]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,18 +75,3 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/louis-cardon/finaltestlouis:${{ steps.docker_tag.outputs.tag }}
-
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Compose
-        run: |
-          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-      - run: docker compose up -d --build
-      - run: sleep 10
-      - run: docker compose logs app
-      - run: docker compose exec app npm run test
