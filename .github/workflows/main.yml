@@ -76,10 +76,11 @@ jobs:
       - name: Set up Docker tags
         id: docker_tag
         run: |
+          echo "tag=" >> $GITHUB_ENV
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "::set-output name=tag::latest"
+            echo "latest" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "::set-output name=tag::develop"
+            echo "develop" >> $GITHUB_ENV
           fi
 
       - name: Build and push Docker image
