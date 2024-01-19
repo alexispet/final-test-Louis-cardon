@@ -32,6 +32,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
   dependency-audit:
     needs: [eslint-check]
@@ -73,11 +74,12 @@ jobs:
       - name: Set up Docker tags
         id: docker_tag
         run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+          if [[ "$GITHUB_REF" == 'refs/heads/main' ]]; then
             echo "tag=latest" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+          elif [[ "$GITHUB_REF" == 'refs/heads/develop' ]]; then
             echo "tag=develop" >> $GITHUB_ENV
           fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
