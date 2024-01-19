@@ -5,6 +5,7 @@ RUN npm install
 COPY . .
 
 FROM node:21.5.0
+LABEL org.opencontainers.image.source https://github.com/alexispet/final-test-Louis-cardon
 WORKDIR /app
 COPY --from=builder /app /app
 COPY entrypoint.sh /app/
