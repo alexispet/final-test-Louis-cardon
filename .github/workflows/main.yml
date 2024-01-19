@@ -72,7 +72,7 @@ jobs:
 
       - name: Set up Docker tags
         id: docker_tag
-       run: |
+        run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "tag=latest" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
