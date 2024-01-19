@@ -22,15 +22,24 @@ jobs:
       - run: docker compose logs app
       - run: docker compose exec app npm run test
 
-  eslint-check:
-    needs: [build-and-test]
+  lint:
+    name: lint
+    continue-on-error: true
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
     steps:
-      - uses: actions/checkout@v2
-      - name: Install modules
-        run: yarn
-      - name: Run ESLint
-        run: eslint . --ext .js,.jsx,.ts,.tsx
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Super-linter
+        uses: super-linter/super-linter@v5.7.2
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   dependency-audit:
     needs: [eslint-check]
