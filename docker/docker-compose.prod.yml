@@ -5,10 +5,15 @@ services:
     image: ghcr.io/louis-cardon/finaltestlouis:latest
     environment:
       NODE_ENV: production
-    ports:
-      - "80:3000"
+    networks:
+      - frontend
+      - backend
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.express-http.rule=Host(`louis-cardon.alpex.ovh`)"
+      - "traefik.http.routers.express-http.entrypoints=websecure"
+      - "traefik.http.routers.express-http.tls.certresolver=myresolver"
     depends_on:
       - mariadb
     env_file:
@@ -23,3 +28,10 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
       - "./docker/mariadb/data:/var/lib/mysql"
+networks:
+  frontend:
+    external: true
+    name: custom_frontend
+  backend:
+    external: true
+    name: custom_backend
