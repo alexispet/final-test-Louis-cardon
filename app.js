@@ -17,7 +17,7 @@ const pool = mariadb.createPool({
 })
 
 app.get('/', async (req, res) => {
-  res.status(200).json({ message: "Bienvenue sur l'API de votre application de prod" })
+  res.status(200).json({ message: "Bienvenue sur l'API de votre application de prod avec des notifs" })
 })
 
 app.get('/post', async (req, res) => {
