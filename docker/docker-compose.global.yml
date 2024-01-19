@@ -37,4 +37,3 @@ networks:
   backend:
     driver: bridge
     name: custom_backend
-
